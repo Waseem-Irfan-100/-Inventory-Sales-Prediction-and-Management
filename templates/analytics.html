@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walmart Dashboard - Analytics</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { 
+      margin: 0;
+      font-family: 'Montserrat', sans-serif; 
+    }
+    
+    .result-card {
+      background: linear-gradient(to right, #00a651, #008a42);
+      color: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    
+    .nav-btn {
+      background-color: white;
+      color: #000000;
+      border: 1px solid #ccc;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 0 5px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.active {
+      background-color: black;
+      color: white;
+    }
+
+    .nav-btn.active:hover {
+      background-color: black;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .graph-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-height: 600px;
+      position: relative;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 2px solid #822ea8;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #9c41b6;
+      box-shadow: 0 0 0 3px rgba(130, 46, 168, 0.1);
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #822ea8;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    .welcome-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 500px;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      margin: 20px 0;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .welcome-message i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+
+    .welcome-message h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .welcome-message p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .chart-wrapper {
+      min-height: 500px;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-down {
+      animation: fadeInDown 0.8s ease-out both;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-slide-in-up {
+      animation: slideInUp 0.6s ease-out both;
+    }
+
+    .metric-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      animation: slideInUp 0.8s ease-out both;
+    }
+
+    .metric-card:nth-child(1) { animation-delay: 0.1s; }
+    .metric-card:nth-child(2) { animation-delay: 0.2s; }
+    .metric-card:nth-child(3) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-tr from-violet-500 via-pink-200 to-white">
+
+<!-- Navbar -->
+<div class="flex justify-between items-center bg-violet-800 px-6 h-24 text-white">
+  <div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20" loading="lazy">
+  </div>
+  <div class="flex items-center gap-6 text-lg font-semibold">
+    {% include 'partials/alerts.html' %}
+
+    <a href="/logout" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </a>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="bg-white bg-opacity-20 backdrop-blur-sm px-6 py-4 flex gap-3 justify-center animate-slide-in-up">
+  <button class="nav-btn" onclick="window.location.href='/dashboard'">
+    Predict Sales
+  </button>
+  <button class="nav-btn" onclick="window.location.href='/top-store-metrics'">
+    Retail Intelligence
+  </button>
+  <button class="nav-btn active" onclick="window.location.href='/status'">
+    Graphical Insights
+  </button>
+  <button class="nav-btn" onclick="window.location.href='/stockstatus'">
+    Stock Status
+  </button>
+  <button class="nav-btn" onclick="window.location.href='/addstock'">
+    Add New Item
+  </button>
+  <button class="nav-btn" onclick="window.location.href='/billing'">
+    Billing Counter
+  </button>
+</div>
+
+<!-- Greeting -->
+<div class="text-center mt-8 mb-8 animate-fade-in-down">
+  <div class="text-3xl font-bold text-[#4a148c] mb-2">📊 Hello, Admin! Explore Store Analytics!</div>
+</div>
+
+<!-- Store Form -->
+<div class="form-container animate-fade-in-down">
+  <form method="POST" action="/store_sales" class="flex flex-col md:flex-row gap-4 items-center justify-center">
+    <div class="form-group flex-1 max-w-xs">
+      <label for="store_id_form" class="font-semibold text-violet-800">Store Number:</label>
+      <input type="text" name="store_id" id="store_id_form" required
+             placeholder="Enter Store ID"/>
+    </div>
+    <div class="flex justify-center">
+      <button
+        type="submit"
+        class="mt-4 px-6 py-2 bg-violet-700 text-white font-semibold rounded shadow 
+              hover:bg-violet-800 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
+              focus:outline-none active:scale-95">
+        Enter
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Graph Container - Only show when there's plot data -->
+{% if plot_html %}
+<div class="graph-container animate-fade-in-down">
+  <div id="chart-area" class="chart-wrapper">
+    {{ plot_html|safe }}
+  </div>
+</div>
+{% endif %}
+
+<!-- Key Metrics -->
+<div class="max-w-6xl mx-auto mt-16 mb-16 px-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="metric-card">
+      <div class="text-3xl font-bold mb-2">$2.4M</div>
+      <div class="text-sm opacity-90">Total Sales (YTD)</div>
+    </div>
+    <div class="metric-card">
+      <div class="text-3xl font-bold mb-2">$45K</div>
+      <div class="text-sm opacity-90">Average Weekly Sales</div>
+    </div>
+    <div class="metric-card">
+      <div class="text-3xl font-bold mb-2">Store 4</div>
+      <div class="text-sm opacity-90">Top Performing Store</div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="py-6 text-center mt-12">
+  <p class="text-gray-600 text-sm font-medium">Powered by Advanced Machine Learning & Predictive Analytics</p>
+  <div class="inline-flex items-center gap-2 mt-2 px-4 py-1 rounded-full bg-yellow-400 text-black font-semibold text-sm shadow-md">
+    ⚡ Walmart Sparkathon 2025
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+  function toggleAlerts() {
+    document.getElementById('alertBox').classList.toggle('hidden');
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[onclick="toggleAlerts()"]') && !document.getElementById('alertBox').contains(e.target)) {
+      document.getElementById('alertBox').classList.add('hidden');
+    }
+  });
+
+  document.querySelector('form').addEventListener('submit', function() {
+    // Show loading spinner in a temporary container
+    const existingContainer = document.querySelector('.graph-container');
+    if (existingContainer) {
+      const chartArea = document.getElementById('chart-area');
+      chartArea.innerHTML = '<div class="loading-spinner"></div>';
+    }
+  });
+</script>
+</body>
+</html>
