@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walmart Dashboard - Billing Counter</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Neuton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .fade-in {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-t from-violet-500 via-pink-300 to-white px-0 fade-in">
+
+<!-- Full-width Navbar -->
+<div class="w-full flex justify-between items-center bg-violet-800 px-6 h-24 text-white">
+  <div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20">
+  </div>
+  <div class="flex items-center gap-6 text-lg font-semibold">
+    {% include 'partials/alerts.html' %}
+    <a href="/logout" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </a>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="w-full bg-gray-100 px-6 py-4 flex gap-3 justify-center">
+  <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/dashboard'">
+    Predict Sales
+  </button>
+  <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/top-store-metrics'">
+    Retail Intelligence
+  </button>
+  <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/status'">
+    Graphical Insights
+  </button>
+  <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/stockstatus'">
+    Stock Status
+  </button>
+  <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/addstock'">
+    Add New Item
+  </button>
+  <button class="bg-gray-800 text-white px-5 py-2 rounded shadow text-sm font-semibold">
+    Billing Counter
+  </button>
+</div>
+
+<!-- Heading -->
+<h2 class="text-2xl text-center font-semibold text-violet-900 mt-8">🧾 Billing Counter</h2>
+
+<!-- Billing Form -->
+<div class="bg-white max-w-3xl mx-auto mt-6 p-6 rounded shadow">
+  <form action="/billing" method="POST" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="font-semibold">Product ID / Name</label>
+        <input type="text" name="product_id" required class="w-full px-4 py-2 border rounded" placeholder="Enter Product ID or Name">
+      </div>
+      <div>
+        <label class="font-semibold">Quantity</label>
+        <input type="number" name="quantity" required min="1" class="w-full px-4 py-2 border rounded" placeholder="Enter Quantity">
+      </div>
+    </div>
+    <div class="text-center">
+      <button type="submit" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-6 py-3 rounded transition">
+        🧾 Generate Bill
+      </button>
+    </div>
+  </form>
+
+  {% if message %}
+    <div class="mt-6 text-center font-semibold text-lg {{ 'text-green-700' if success else 'text-red-600' }}">
+      {{ message }}
+    </div>
+  {% endif %}
+</div>
+
+<!-- Footer -->
+<div class="py-6 text-center mt-12">
+  <p class="text-gray-600 text-sm font-medium">
+    Powered by Walmart Billing System
+  </p>
+  <div class="inline-flex items-center gap-2 mt-2 px-4 py-1 rounded-full bg-yellow-400 text-black font-semibold text-sm shadow-md">
+    💳 Secure POS Interface
+  </div>
+</div>
+
+</body>
+</html>

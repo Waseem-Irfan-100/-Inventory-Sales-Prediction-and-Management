@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walmart Dashboard - Metrics View</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .section-header {
+      font-family: 'Neuton', serif;
+    }
+  </style>
+</head>
+
+<script>
+  const allMetrics = {{ metrics | tojson | safe }};
+  const visibleCounts = { sales: 5, economic: 5, operational: 5, time: 5 };
+
+  function loadMore(type) {
+    const containerMap = {
+      sales: 'salesMetricsList',
+      economic: 'economicMetricsList',
+      operational: 'operationalMetricsList',
+      time: 'timeMetricsList'
+    };
+
+    const buttonMap = {
+      sales: 'loadMoreSales',
+      economic: 'loadMoreEconomic',
+      operational: 'loadMoreOperational',
+      time: 'loadMoreTime'
+    };
+
+    const listContainer = document.getElementById(containerMap[type]);
+    const btn = document.getElementById(buttonMap[type]);
+    const start = visibleCounts[type] - 5;
+    const end = visibleCounts[type];
+    const slice = allMetrics.slice(start, end);
+
+    slice.forEach(metric => {
+      const card = document.createElement('div');
+      card.className = 'bg-white border border-violet-300 rounded-xl shadow-md p-4 max-w-3xl mx-auto';
+
+      if (type === 'sales') {
+        card.innerHTML = `
+          <div class="text-lg font-bold text-violet-800 mb-2">🏬 Store ${metric.store_id}</div>
+          <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700 pl-2">
+            <div>💰 Total Sales: <span class="font-semibold text-gray-900">$${metric.sales_based.total_sales}</span></div>
+            <div>📊 Avg Weekly Sales: <span class="font-semibold text-gray-900">$${metric.sales_based.average_weekly_sales}</span></div>
+            <div>📈 Max Weekly Sales: <span class="font-semibold text-gray-900">$${metric.sales_based.max_weekly_sales}</span></div>
+            <div>📉 Min Weekly Sales: <span class="font-semibold text-gray-900">$${metric.sales_based.min_weekly_sales}</span></div>
+          </div>
+        `;
+      }
+
+      if (type === 'economic') {
+        card.innerHTML = `
+          <div class="text-lg font-bold text-violet-800 mb-2">🏬 Store ${metric.store_id}</div>
+          <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700 pl-2">
+            <div>🧮 Avg CPI: <span class="font-semibold text-gray-900">${metric.economic_indicators.avg_cpi}</span></div>
+            <div>📉 Avg Unemployment: <span class="font-semibold text-gray-900">${metric.economic_indicators.avg_unemployment}%</span></div>
+          </div>
+        `;
+      }
+
+      if (type === 'operational') {
+        card.innerHTML = `
+          <div class="text-lg font-bold text-violet-800 mb-2">🏬 Store ${metric.store_id}</div>
+          <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700 pl-2">
+            <div>📆 Total Weeks: <span class="font-semibold text-gray-900">${metric.operational_metrics.total_weeks}</span></div>
+            <div>🎉 Holiday Weeks: <span class="font-semibold text-gray-900">${metric.operational_metrics.holiday_weeks}</span></div>
+            <div>📭 Non-Holiday Weeks: <span class="font-semibold text-gray-900">${metric.operational_metrics.non_holiday_weeks}</span></div>
+          </div>
+        `;
+      }
+
+      if (type === 'time') {
+        card.innerHTML = `
+          <div class="text-lg font-bold text-violet-800 mb-2">🏬 Store ${metric.store_id}</div>
+          <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700 pl-2">
+            <div>📅 Start: <span class="font-semibold text-gray-900">${metric.time_based.start}</span></div>
+            <div>📅 End: <span class="font-semibold text-gray-900">${metric.time_based.end}</span></div>
+            <div>📆 Year Range: <span class="font-semibold text-gray-900">${metric.time_based.year_range} yrs</span></div>
+          </div>
+        `;
+      }
+
+      listContainer.appendChild(card);
+    });
+
+    // Increment by 10 for next click
+    visibleCounts[type] += 10;
+
+    if (visibleCounts[type] - 5 >= allMetrics.length) {
+      btn.style.display = 'none';
+    }
+  }
+
+  // Auto-load first 5 for each section
+  document.addEventListener('DOMContentLoaded', () => {
+    ['sales', 'economic', 'operational', 'time'].forEach(type => {
+      const initialVisible = visibleCounts[type] - 5;
+      const initialSlice = allMetrics.slice(initialVisible, visibleCounts[type]);
+      visibleCounts[type] += 5; // prepare for next "load more" (which will show 10)
+      loadMore(type);
+    });
+  });
+</script>
+
+<script>
+  // Scroll to top function
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Show/hide button based on scroll position
+  window.onscroll = function () {
+    const btn = document.getElementById("scrollToTopBtn");
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+      btn.classList.remove("hidden");
+    } else {
+      btn.classList.add("hidden");
+    }
+  };
+</script>
+
+
+<!-- Scroll to Top Button -->
+<button id="scrollToTopBtn" onclick="scrollToTop() "
+  class="fixed bottom-6 right-6 w-20 h-20 rounded-full bg-violet-700 text-white shadow-lg hover:bg-violet-800 transition duration-300 ease-in-out z-50 hidden">
+  <i class="fa-solid fa-circle-up text-2xl"></i>
+</button>
+
+
+<body class="min-h-screen bg-gradient-to-t from-violet-500 via-pink-300 to-white">
+
+<!-- Main Navbar -->
+<div class="flex justify-between items-center bg-violet-800 px-6 h-24 text-white">
+  <div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20">
+  </div>
+  <div class="flex items-center gap-6 text-lg font-semibold">
+    <!-- Alerts Button -->
+    {% include 'partials/alerts.html' %}
+
+
+    <a href="/logout" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</div>
+
+  <!-- TABS -->
+  <div class="bg-gray-100 px-6 py-4 flex gap-3 justify-center">
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/dashboard'">
+      Predict Item
+    </button>
+    <button class="bg-gray-800 text-white px-5 py-2 rounded shadow text-sm font-semibold" onclick="window.location.href='/top-store-metrics'">
+      Retail Intelligence
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/status'">
+      Graphical Insights
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/stockstatus'">
+      Stock Status
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/addstock'">
+      Add New Item
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/billing'">
+      Billing Counter
+    </button>
+  </div>
+
+<!-- Sub Navigation for Metric Categories -->
+<div class="bg-violet-100 px-4 py-3 flex justify-center gap-3 border-b border-violet-300 shadow-sm">
+  <button onclick="scrollToSection('sales-metrics')" class="bg-white px-4 py-2 rounded-lg shadow text-sm font-semibold text-violet-900 hover:bg-violet-200 transition">📈 Sales-Based Metrics</button>
+  <button onclick="scrollToSection('economic-indicators')" class="bg-white px-4 py-2 rounded-lg shadow text-sm font-semibold text-violet-900 hover:bg-violet-200 transition">💰 Economic Indicators</button>
+  <button onclick="scrollToSection('operational-metrics')" class="bg-white px-4 py-2 rounded-lg shadow text-sm font-semibold text-violet-900 hover:bg-violet-200 transition">🏪 Operational Metrics</button>
+  <button onclick="scrollToSection('time-factors')" class="bg-white px-4 py-2 rounded-lg shadow text-sm font-semibold text-violet-900 hover:bg-violet-200 transition">📅 Time-Based Factors</button>
+</div>
+
+
+
+<!-- Sales-Based Metrics -->
+<section id="sales-metrics">
+  <h2 class="text-2xl section-header font-bold text-violet-800 mb-4">📈 Sales-Based Metrics</h2>
+  <div id="salesMetricsList" class="space-y-4"></div>
+  <div class="mt-6 text-center">
+    <button id="loadMoreSales" onclick="loadMore('sales')" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-5 py-2 rounded-lg shadow-md text-sm">View More Stores</button>
+  </div>
+</section>
+
+<!-- Economic Indicators -->
+<section id="economic-indicators">
+  <h2 class="text-2xl section-header font-bold text-violet-800 mb-4">💰 Economic & Market Indicators</h2>
+  <div id="economicMetricsList" class="space-y-4"></div>
+  <div class="mt-6 text-center">
+    <button id="loadMoreEconomic" onclick="loadMore('economic')" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-5 py-2 rounded-lg shadow-md text-sm">View More Stores</button>
+  </div>
+</section>
+
+<!-- Operational Metrics -->
+<section id="operational-metrics">
+  <h2 class="text-2xl section-header font-bold text-violet-800 mb-4">🏪 Operational Metrics</h2>
+  <div id="operationalMetricsList" class="space-y-4"></div>
+  <div class="mt-6 text-center">
+    <button id="loadMoreOperational" onclick="loadMore('operational')" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-5 py-2 rounded-lg shadow-md text-sm">View More Stores</button>
+  </div>
+</section>
+
+<!-- Time-Based Factors -->
+<section id="time-factors">
+  <h2 class="text-2xl section-header font-bold text-violet-800 mb-4">📅 Time-Based Sales Patterns</h2>
+  <div id="timeMetricsList" class="space-y-4"></div>
+  <div class="mt-6 text-center">
+    <button id="loadMoreTime" onclick="loadMore('time')" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-5 py-2 rounded-lg shadow-md text-sm">View More Stores</button>
+  </div>
+</section>
+
+
+
+<!-- Footer -->
+<div class="py-6 text-center mt-16">
+  <p class="text-gray-600 text-sm font-medium">Powered by Advanced Machine Learning & Predictive Analytics</p>
+  <div class="inline-flex items-center gap-2 mt-2 px-4 py-1 rounded-full bg-yellow-400 text-black font-semibold text-sm shadow-md">
+    ⚡ Walmart Sparkathon 2025
+  </div>
+</div>
+
+<!-- Scripts -->
+
+<script>
+  function toggleAlerts() {
+    const box = document.getElementById('alertBox');
+    box.classList.toggle('hidden');
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+  
+</script>
+
+</body>
+</html>

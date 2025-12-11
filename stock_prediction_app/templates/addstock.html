@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walmart Dashboard - Add New Item</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-t from-violet-500 via-pink-300 to-white fade-in">
+
+<!-- Navbar -->
+<div class="flex justify-between items-center bg-violet-800 px-6 h-24 text-white" class="bg-white shadow-lg rounded-xl p-4 w-72 transform transition duration-500 hover:scale-105 hover:shadow-xl">
+  <div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20">
+  </div>
+  <div class="flex items-center gap-6 text-lg font-semibold">
+    <!-- Alerts Button -->
+<!-- Alerts Button with Bell Icon -->
+{% include 'partials/alerts.html' %}
+
+
+
+    <a href="/logout" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+  <i class="fa-solid fa-right-from-bracket"></i>
+  Logout
+</a>
+
+  </div>
+</div>
+
+  <!-- Navigation Tabs -->
+  <div class="bg-gray-100 px-6 py-4 flex gap-3 justify-center">
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/dashboard'">
+      Predict Item
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/status'">
+      Stock Status
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/status'">
+      Graphical Insights
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/stockstatus'">
+      Stock Status
+    </button>
+    <button class="bg-gray-800 text-white px-5 py-2 rounded shadow text-sm font-semibold">
+      Add New Item
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/billing'">
+      Billing Counter
+    </button>
+  </div>
+
+  <!-- Form Section -->
+  <div class="bg-white max-w-3xl mx-auto mt-10 p-8 rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold mb-6 text-center text-violet-800" style="font-family: 'Neuton', serif;">
+      🛒 Add New Inventory Item
+    </h2>
+
+    {% if message %}
+      <div class="mb-4 text-green-600 font-semibold text-center">
+        {{ message }}
+      </div>
+    {% endif %}
+
+    <form action="/addstock" method="POST" class="space-y-6">
+      <div>
+        <label class="block font-semibold mb-2">Item Name</label>
+        <input name="item_name" type="text" placeholder="Enter item name" class="w-full px-5 py-3 border rounded-full" required>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block font-semibold mb-2">Category</label>
+          <select name="category" class="w-full px-5 py-3 border rounded-full" required>
+            <option disabled selected>Select Category</option>
+            <option>Beverages</option>
+            <option>Snacks</option>
+            <option>Spices</option>
+            <option>Dairy</option>
+            <option>Electronics</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2">Brand</label>
+          <select name="brand" class="w-full px-5 py-3 border rounded-full" required>
+            <option disabled selected>Select Brand</option>
+            <option>Tata Tea</option>
+            <option>Kurkure</option>
+            <option>Everest</option>
+            <option>Amul</option>
+            <option>LG</option>
+            <option>Samsung</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block font-semibold mb-2">Stock Quantity</label>
+          <input name="stock_quantity" type="number" placeholder="e.g. 100" class="w-full px-5 py-3 border rounded-full" required>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2">Availability</label>
+          <select name="availability" class="w-full px-5 py-3 border rounded-full" required>
+            <option>In Stock</option>
+            <option>Out of Stock</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block font-semibold mb-2">Price Range</label>
+          <select name="price_range" class="w-full px-5 py-3 border rounded-full" required>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2">Rating</label>
+          <select name="rating" class="w-full px-5 py-3 border rounded-full" required>
+            <option>1 Star</option>
+            <option>2 Stars</option>
+            <option>3 Stars</option>
+            <option>4 Stars</option>
+            <option>5 Stars</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="text-center pt-4">
+        <button type="submit" class="bg-gradient-to-r from-violet-600 to-pink-500 hover:from-pink-600 hover:to-violet-700 text-white px-10 py-3 rounded-full font-semibold shadow transition transform hover:scale-105">
+          ➕ Add Item
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="py-6 text-center mt-12">
+    <p class="text-gray-600 text-sm font-medium">
+      Powered by Advanced Inventory Management & Analytics
+    </p>
+    <div class="inline-flex items-center gap-2 mt-2 px-4 py-1 rounded-full bg-yellow-400 text-black font-semibold text-sm shadow-md">
+      ⚡ Walmart Sparkathon 2025
+    </div>
+  </div>
+
+</body>
+</html>

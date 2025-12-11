@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Walmart Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    header {
+      background-color: #822ea8;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 30px;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    .signup-container {
+      max-width: 450px;
+      margin: 60px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .signup-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .signup-btn {
+      width: 100%;
+      background-color: #822ea8;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .signup-btn:hover {
+      background-color: #9c41b6;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #822ea8;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  </style>
+  <style>
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-down {
+    animation: fadeInDown 0.8s ease-out both;
+  }
+</style>
+
+</head>
+<body class="min-h-screen bg-gradient-to-tr from-violet-500 via-pink-200 to-white">
+
+  <!-- Navbar -->
+  <div class="flex justify-between items-center bg-violet-800 px-6 h-24 text-white" class="bg-white shadow-lg rounded-xl p-4 w-72 transform transition duration-500 hover:scale-105 hover:shadow-xl">
+    <div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20">
+    </div>
+    <div class="flex items-center gap-6 text-lg font-semibold">
+
+    <a href="/help" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+      <i class="fa-solid fa-headset"></i>
+      Need Help?
+    </a>
+
+    </div>
+  </div>
+
+  <div class="signup-container animate-fade-in-down transition-opacity duration-1000 ease-out">
+    <big><h2><b>Create Your Store Account</b></h2></big>
+
+    <form action="/signup" method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required />
+      </div>
+
+      <div class="form-group">
+        <label for="approval_id">Approval ID</label>
+        <input type="text" name="approval_id" id="approval_id" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required />
+      </div>
+      
+      <div class="flex justify-center">
+      <button
+        type="submit"
+        class="mt-4 px-6 py-2 bg-violet-700 text-white font-semibold rounded shadow 
+              hover:bg-violet-800 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
+              focus:outline-none active:scale-95">
+        Sign Up
+      </button>
+      </div>
+    </form>
+
+  <div class="login-link text-sm text-center mt-4">
+    Already have an account?
+    <a href="/login" class="text-blue-600 hover:underline">Login</a>
+  </div>
+
+  </div>
+</body>
+</html>

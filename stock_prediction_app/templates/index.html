@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walmart Dashboard - Predict Sales</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .result-card {
+      background: linear-gradient(to right, #00a651, #008a42);
+      color: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <style>
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+</head>
+<body class="min-h-screen bg-gradient-to-t from-violet-500 via-pink-300 to-white" class="max-w-6xl mx-auto mt-10 px-4 space-y-16 fade-in">
+
+<!-- Navbar -->
+<div class="flex justify-between items-center bg-violet-800 px-6 h-24 text-white" class="bg-white shadow-lg rounded-xl p-4 w-72 transform transition duration-500 hover:scale-105 hover:shadow-xl">
+  <div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-20">
+  </div>
+  <div class="flex items-center gap-6 text-lg font-semibold">
+    <!-- Alerts Button -->
+<!-- Alerts Button with Bell Icon -->
+{% include 'partials/alerts.html' %}
+
+
+
+    <a href="/logout" class="hover:underline text-white text-base font-bold flex items-center gap-1">
+  <i class="fa-solid fa-right-from-bracket"></i>
+  Logout
+</a>
+
+  </div>
+</div>
+
+  <!-- Tabs -->
+  <div class="bg-gray-100 px-6 py-4 flex gap-3 justify-center">
+    <button class="bg-gray-800 text-white px-5 py-2 rounded shadow text-sm font-semibold">
+      Predict Sales
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/top-store-metrics'">
+      Retail Intelligence
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/status'">
+      Graphical Insights
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/stockstatus'">
+      Stock Status
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/addstock'">
+      Add New Item
+    </button>
+    <button class="bg-white border px-5 py-2 rounded shadow text-sm font-semibold hover:bg-gray-200" onclick="window.location.href='/billing'">
+      Billing Counter
+    </button>
+  </div>
+
+
+  <div style="font-family: 'Neuton', cursive; font-size: 30px; text-align: center; font-weight: bold; margin-top: 20px; color: #4a148c;">
+    👋😊, {{ username }}!!
+  </div>
+  <!-- Form Section -->
+  <div class="bg-white shadow rounded max-w-4xl mx-auto mt-8 p-6">
+    <h2 class="text-2xl font-semibold mb-4 text-center text-violet-800">Predict Sales Performance</h2>
+    <form id="predictForm">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+        <label class="block font-semibold mb-1">Store ID</label>
+        <input type="number" id="store_id" name="store_id" required class="w-full px-4 py-2 border rounded" placeholder="Enter Store ID" />
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">Start Date</label>
+          <input type="date" id="start" name="start" required class="w-full px-4 py-2 border rounded" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">End Date</label>
+          <input type="date" id="end" name="end" required class="w-full px-4 py-2 border rounded" />
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button type="submit" id="predictBtn" class="bg-violet-700 hover:bg-violet-800 text-white font-semibold px-6 py-3 rounded transition">
+          🚀 Predict Sales
+        </button>
+      </div>
+    </form>
+
+    <div id="resultSection" class="mt-8"></div>
+  </div>
+
+<!-- Footer -->
+<div class="py-6 text-center mt-12">
+  <p class="text-gray-600 text-sm font-medium">
+    Powered by Advanced Machine Learning & Predictive Analytics
+  </p>
+  <div class="inline-flex items-center gap-2 mt-2 px-4 py-1 rounded-full bg-yellow-400 text-black font-semibold text-sm shadow-md">
+    ⚡ Walmart Sparkathon 2025
+  </div>
+</div>
+
+
+  <script>
+function toggleAlerts() {
+  const box = document.getElementById('alertBox');
+  if (box) box.classList.toggle('hidden');
+}
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start').setAttribute('min', today);
+    document.getElementById('end').setAttribute('min', today);
+
+    document.getElementById('start').addEventListener('change', function () {
+      document.getElementById('end').setAttribute('min', this.value);
+    });
+
+    document.getElementById('predictForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const store = document.getElementById('store_id').value;
+    const start = document.getElementById('start').value;
+    const end = document.getElementById('end').value;
+    const predictBtn = document.getElementById('predictBtn');
+    const resultSection = document.getElementById('resultSection');
+
+    if (new Date(end) <= new Date(start)) {
+      showError('End date must be after start date');
+      return;
+    }
+
+    predictBtn.disabled = true;
+    predictBtn.textContent = 'Analyzing...';
+    resultSection.innerHTML = '';
+
+    try {
+      const response = await fetch('/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+      store_id: parseInt(store),
+      start: start,
+      end: end
+      })
+
+    });
+
+
+      const data = await response.json();
+
+      if (data.error) {
+        showError(data.error);
+      } else {
+        displayResult(data); // Summary
+        displayForecastDebug(data.forecast_details); // Weekly breakdown
+      }
+
+    } catch (err) {
+      showError('Prediction failed. Try again.');
+    } finally {
+      predictBtn.disabled = false;
+      predictBtn.textContent = '🚀 Predict Sales';
+    }
+    });
+
+    function formatDateToDDMMYYYY(dateString) {
+      const [year, month, day] = dateString.split("-");
+      return `${day}-${month}-${year}`;  // DD-MM-YYYY
+    }
+
+    function displayResult(data) {
+      const resultSection = document.getElementById('resultSection');
+      resultSection.innerHTML = `
+        <div class="result-card">
+          <div class="text-xl font-semibold mb-2">Predicted Sales</div>
+          <div class="text-4xl font-bold mb-4">$${data.predicted_sales.toLocaleString()}</div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+            <div><span class="font-semibold">Store:</span> #${data.store}</div>
+            <div><span class="font-semibold">Date Range:</span> ${formatDate(data.start)} - ${formatDate(data.end)}</div>
+            <div><span class="font-semibold">Days:</span> ${data.days}</div>
+            <div><span class="font-semibold">Daily Avg:</span> $${data.daily_average.toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayForecastDebug(details) {
+      const section = document.getElementById('resultSection');
+
+      const weeklyCards = details.map(week => {
+        return `
+          <div class="border border-violet-300 p-4 rounded-lg shadow bg-violet-50 mb-4 transition hover:scale-[1.02] duration-300">
+            <div class="flex justify-between font-semibold text-violet-800 mb-2">
+              <span>📅 Week ${week.week}</span>
+              <span>${formatDate(week.From)} ➜ ${formatDate(week.Till)}</span>
+            </div>
+            <div class="text-lg font-bold text-violet-900 mb-1">Predicted Sales: $${week.sales_prediction.toLocaleString()}</div>
+            ${week.note ? `<div class="text-sm italic text-yellow-700 mt-1">💡 ${week.note}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      section.innerHTML += `
+        <h3 class="text-center text-xl font-semibold mt-10 text-violet-900">📊 Weekly Forecast Breakdown</h3>
+        <div class="mt-4">${weeklyCards}</div>
+      `;
+    }
+
+
+    function showError(message) {
+      document.getElementById('resultSection').innerHTML = `
+        <div class="bg-red-100 text-red-800 p-4 rounded mt-4 text-center font-semibold">
+          ⚠ ${message}
+        </div>
+      `;
+    }
+
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  </script>
+
+</body>
+</html>

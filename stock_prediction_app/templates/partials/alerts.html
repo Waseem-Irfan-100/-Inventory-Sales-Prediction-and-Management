@@ -1,0 +1,30 @@
+<!-- Alerts Button with Bell Icon -->
+<div class="relative">
+  <button onclick="toggleAlerts()" class="flex items-center gap-2 text-white text-lg font-semibold hover:underline focus:outline-none">
+    <i class="fa-solid fa-bell text-2xl"></i>
+    <span>Alerts</span>
+    {% if alerts and alerts|length > 0 %}
+      <span class="ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">
+        {{ alerts|length }}
+      </span>
+    {% endif %}
+  </button>
+
+  <!-- Notification Popup -->
+  <div id="alertBox" class="hidden absolute right-0 mt-2 w-80 bg-white text-black rounded shadow-lg z-50">
+    <div class="p-4 border-b font-semibold text-red-600">🔔 Critical Alerts</div>
+    <ul class="max-h-60 overflow-y-auto">
+      {% if alerts %}
+        {% for msg in alerts %}
+        <li class="px-4 py-3 border-b hover:bg-gray-100">
+          {{ msg }}
+        </li>
+        {% endfor %}
+      {% else %}
+        <li class="px-4 py-3 text-gray-500">
+          ✅ No critical alerts
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
